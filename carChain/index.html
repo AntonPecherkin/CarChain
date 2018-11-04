@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>carChain</title>
+    <script>
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            alert('Please activate MetaMask Plugin and reload page! You can find it here: https://metamask.io/')
+        }
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/dropRight.js"></script>
+    <script src="js/contractUse.js"></script>
+    <script src="js/map.js"></script>
+    <style>
+        #topBar{
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            height: 10%;
+            width: 100%;
+            background-color: #2e2e2e;
+        }
+        #leftBar{
+            position: absolute;
+            top: 10%;
+            left: 0;
+            height: 90%;
+            width: 20%;
+            background-color: #2b334f;
+        }
+        #map{
+            position: absolute;
+            top: 10%;
+            left: 20%;
+            height: 90%;
+            width: 80%;
+        }
+        #rightBar{
+            position: absolute;
+            top: 10%;
+            right: 0;
+            height: 90%;
+            width: 80%;
+            z-index: 20;
+            background-color: #2b334f;
+        }
+        #rightBar_drop{
+            display: none;
+        }
+        #footer{
+            position: absolute;
+            top: 100%;
+            left: 0;
+            height: 10%;
+            width: 100%;
+            background-color: #2e2e2e;
+        }
+        .round{
+            border-radius: 100%; /* Радиус скругления */
+            border: 0px solid; /* Параметры рамки */
+            position: absolute;
+            top: 5%;
+            right: 1%;
+        }
+        #rightBar_button{
+            border-radius: 100%; /* Радиус скругления */
+            border: 0px solid; /* Параметры рамки */
+            position: absolute;
+            top: 44%;
+            right: 1%;
+            z-index: 10;
+        }
+        .buttonDropBar{
+            border-radius: 100%; /* Радиус скругления */
+            border: 0px solid; /* Параметры рамки */
+            position: absolute;
+            top: 44%;
+            left: -2.6%;
+            z-index: 10;
+        }
+        .owner{
+            color: whitesmoke;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            position: absolute;
+            right: 6%;
+            top: 15%;
+        }
+        .line{
+            position: absolute;
+            left: 0;
+        }
+        .choiceCar-none{
+            display: none;
+        }
+        .choiceCar{
+            position: absolute;
+            top: 15%;
+            left: 7%;
+            width: 30%;
+            height: 30%;
+            background-image: url("images/no_photo.png");
+            background-size: 150%;
+            background-position: center;
+
+        }
+
+        ::-webkit-scrollbar {
+            width: 1px;
+            height: 1px;
+        }
+
+        ::-webkit-scrollbar-button {
+            width: 1px;
+            height: 1px;
+        }
+
+        body {
+            background: #111;
+        }
+
+        div {
+            box-sizing: border-box;
+        }
+
+        .horizontal-scroll-wrapper-none{
+            display: none;
+        }
+        .horizontal-scroll-wrapper {
+            position: absolute;
+            display: block;
+            top: 10%;
+            left: 7%;
+            width: calc(250px + 1px);
+            max-height: 1100px;
+            margin: 0;
+            padding-top: 1px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-transform: rotate(-90deg) translateY(-250px);
+            transform: rotate(-90deg) translateY(-250px);
+            -webkit-transform-origin: right top;
+            transform-origin: right top;
+        }
+        .horizontal-scroll-wrapper > div {
+            display: block;
+            padding: 5px;
+            -webkit-transform: rotate(90deg);
+            transform: rotate(90deg);
+            -webkit-transform-origin: right top;
+            transform-origin: right top;
+        }
+
+        .squares {
+            padding: 250px 0 0 0;
+        }
+        .squares > div {
+            width: 250px;
+            height: 250px;
+            margin: 10px 0;
+        }
+        #item1{
+            background-image: url("images/1.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #item2{
+            background-image: url("images/2.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #item3{
+            background-image: url("images/3.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #item4{
+            background-image: url("images/4.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #item5{
+             background-image: url("images/5.jpg");
+             background-size: 100%;
+             background-position: center;
+             background-repeat: no-repeat;
+         }
+        #item6{
+            background-image: url("images/6.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #item7{
+            background-image: url("images/7.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #item8{
+            background-image: url("images/8.jpg");
+            background-size: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .contentText{
+            color: whitesmoke;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            font-size: 250%;
+            position: absolute;
+            left: 30%;
+            top: 1%;
+        }
+        .lable{
+            color: whitesmoke;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            font-size: 150%;
+            position: absolute;
+            top: 40px;
+            left: 14%;
+        }
+        .lable1{
+            color: whitesmoke;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            font-size: 150%;
+            position: absolute;
+            top: 40px;
+            left: 0%;
+        }
+        .lable2{
+            color: whitesmoke;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            font-size: 150%;
+            position: absolute;
+            top: 140px;
+            left: 0%;
+        }
+        .lable3{
+            color: whitesmoke;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            font-size: 150%;
+            position: absolute;
+            top: 240px;
+            left: 0%;
+        }
+        .input1{
+            font-type: sans-serif;
+            font-size: 170%;
+            color: #2e2e2e;
+            position: absolute;
+            top: 70px;
+            left: 0%;
+            height: 45px;
+            width: 85%;
+        }
+        .input2{
+            font-type: sans-serif;
+            font-size: 170%;
+            color: #2e2e2e;
+            position: absolute;
+            top: 170px;
+            left: 0%;
+            height: 45px;
+            width: 85%;
+        }
+        .input3{
+            font-type: sans-serif;
+            font-size: 170%;
+            color: #2e2e2e;
+            position: absolute;
+            top: 270px;
+            left: 0%;
+            height: 45px;
+            width: 85%;
+        }
+        .inputs-none{
+            display: none;
+        }
+        .inputs{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 50%;
+            width: 50%;
+        }
+        .inputsDes-none{
+            display: none;
+        }
+        .inputsDes{
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            height: 50%;
+            width: 50%;
+        }
+        textarea{
+            position: absolute;
+            top: 70px;
+            left: 14%;
+            width: 74%;
+            height: 63%;
+            /* font-family: ;*/
+            font-type: sans-serif;
+            font-size: 150%;
+            color: #2e2e2e;
+            margin: 0;
+            padding: 2%;
+            border-radius: 1px;
+            background-color: whitesmoke;
+            text-align:left;
+            resize: none;
+        }
+        .addCar-none{
+            display: none;
+        }
+        .addCar{
+            position: absolute;
+            bottom: 4%;
+            left: 10%;
+            width: 80%;
+            text-decoration:none;
+            text-align:center;
+            padding:11px 32px;
+            border:solid 1px #3c4466;
+            -webkit-border-radius:4px;
+            -moz-border-radius:4px;
+            border-radius: 4px;
+            font:18px Arial, Helvetica, sans-serif;
+            font-weight:bold;
+            color:#E5FFFF;
+            background-color: #222840;
+            background-image: -webkit-linear-gradient(top, #222840 0%, #222840 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222840', endColorstr='#222840',GradientType=0 );
+        }
+        #addCar:hover{
+            background-color: #3c4466;
+            background-image: -webkit-linear-gradient(top, #3c4466 0%, #3c4466 100%);
+        }
+        #carCard-none{
+            display: none;
+        }
+        #carCard{
+            position: absolute;
+            width: 80%;
+            height: 60%;
+            top: 5%;
+            left: 10%;
+            background-color: #f8ffc7;
+            background-image: url("images/2.jpg");
+            background-size: 100%;
+            background-position-y: top;
+            background-repeat: no-repeat;
+        }
+        .stars{
+            position: absolute;
+            width: 80%;
+            height: 12%;
+            top: 45%;
+            left: 10%;
+        }
+        #number{
+            position: absolute;
+            top: 55%;
+            left: 18%;
+            font-family: "Courier New", Courier;
+            color: #2e2e2e;
+        }
+        #phone{
+            position: absolute;
+            top: 62%;
+            left: 18%;
+            font-family: "Courier New", Courier;
+            color: #2e2e2e;
+        }
+        #car{
+            position: absolute;
+            top: 70%;
+            left: 18%;
+            font-family: "Courier New", Courier;
+            color: #2e2e2e;
+        }
+        #refresh-none{
+            display: none;
+        }
+        #refresh{
+            position: absolute;
+            bottom: 20%;
+        }
+        .leftBarImg{
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 80%;
+            height: 70%;
+        }
+        .gm-style-mtc{
+            display: none;
+        }
+        .gmnoprint{
+            display: none;
+        }
+        .gm-svpc{
+            display: none;
+        }
+        .gm-control-active{
+            display: none;
+        }
+        .link{
+            position: absolute;
+            top: 32%;
+            left: 57%;
+            font-family: "Courier New", Courier;
+            font-style: inherit;
+            font-size: 150%;
+            color: whitesmoke;
+            text-decoration: none
+        }
+        .vk{
+            position: absolute;
+            top: 18%;
+            left: 38%;
+            size: 60px;
+        }
+        .slack{
+            position: absolute;
+            top: 18%;
+            left: 43%;
+            size: 60px;
+        }
+        .facebook{
+            position: absolute;
+            top: 18%;
+            left: 48%;
+            size: 60px;
+        }
+        .telega{
+            position: absolute;
+            top: 18%;
+            left: 53%;
+            size: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div id="topBar">
+        <h2 class="owner">Ivan Pankov</h2>
+        <p><img src="images/QizLgrf6K-E.jpg" width="68" height="68" alt="" class="round"></p>
+        <!--<p><img src="images/pulse.png" width="500" height="68" class="pulse"></p>
+        <p><img src="images/MDlogo.png" width="90" height="68" class="logo"></p>-->
+    </div>
+    <div id="rightBar_button">
+        <p><img src="images/arrow_left.png" width="68" height="68" alt="" onclick="dropUp()"></p>
+    </div>
+    <div id="leftBar">
+        <!--<img src="images/leftBar.png" alt="" class="leftBarImg">-->
+        <button class="addCar-none" onclick="deployContract()">Add Car</button>
+        <button class="addCar-none" id="onOff" onclick="onOff()">ON</button>
+        <button class="addCar" id="refresh-none" onclick="refresh()">Refresh</button>
+        <div id="carCard-none">
+            <img src="images/stars.png" class="stars">
+            <h3 id="number">AD-821-TM</h3>
+            <h3 id="phone">+7(916)751-94-55</h3>
+            <h3 id="car">150 345 km</h3>
+        </div>
+    </div>
+    <div id="map">
+        <script>
+        var map;
+        function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 53.0796878, lng: 8.7924959},
+        styles: mapStyle,
+        zoom: 12,
+        icon: {
+            url: 'images/car-marker.png', // url
+            scaledSize: new google.maps.Size(40, 70), // scaled size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
+        }
+        });
+
+
+        google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(event.latLng);
+        pointLocation = event.latLng;
+        console.log('pointLocation: ', pointLocation);
+        });
+
+        }
+
+        function placeMarker(location) {
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                icon: {
+                    url: 'images/car-marker.png', // url
+                    scaledSize: new google.maps.Size(40, 30), // scaled size
+                    origin: new google.maps.Point(0, 0), // origin
+                    anchor: new google.maps.Point(0, 0) // anchor
+                }
+            });
+            console.log('location.LatLng', location.lat());
+            console.log('location.LatLng', location.lng());
+            lng = location.lat();
+            lat = location.lng();
+            // markers.push(marker);
+        }
+        </script>
+    </div>
+    <div id="rightBar_drop">
+        <p><img src="images/arrow_right_blue.png" width="68" height="68" alt="" class="buttonDropBar" onclick="dropDown()"></p>
+        <p><img src="images/line.png" width="3" height="680" class="line"></p>
+        <h2 class="contentText">Add Car Information</h2>
+        <div class="horizontal-scroll-wrapper-none squares">
+            <div id="item1"></div>
+            <div id="item2"></div>
+            <div id="item3"></div>
+            <div id="item4"></div>
+            <div id="item5"></div>
+            <div id="item6"></div>
+            <div id="item7"></div>
+            <div id="item8"></div>
+        </div>
+        <div class="inputsDes-none">
+            <label class="lable"><b>Description :</b></label>
+            <textarea></textarea>
+        </div>
+        <div class="inputs-none">
+            <label class="lable1"><b>Car number :</b></label>
+            <input class="input1" name="first" type="text">
+            <label class="lable2"><b>Your phone number :</b></label>
+            <input class="input2" name="last" type="text">
+            <label class="lable3"><b>Price :</b></label>
+            <input class="input3" name="last" type="text">
+        </div>
+
+
+        <p><input type="file" multiple accept="image/*" class="choiceCar" onchange="showCars()"></p>
+        <!--<button onclick="deployContract()">Add Car</button>-->
+    </div>
+    <div id="footer">
+        <a href="http://startblock.online/" target="_blank" class="link">startblock.online</a>
+        <p><img src="images/VK.png" width="50" height="50" alt="" class="vk" ></p>
+        <p><img src="images/slack.png" width="50" height="50" alt="" class="slack" ></p>
+        <p><img src="images/facebook.png" width="50" height="50" alt="" class="facebook"></p>
+        <p><img src="images/Telegram_logo.png" width="50" height="50" alt="" class="telega"></p>
+    </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtJsuDvrKcBeURzwglw1kfPDdOyEAEtPU&callback=initMap"
+            async defer></script>
+</body>
+</html>
